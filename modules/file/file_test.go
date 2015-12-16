@@ -200,8 +200,7 @@ func TestMode(t *testing.T) {
 }
 
 func TestHashes(t *testing.T) {
-	for _, hashtype := range []string{`md5`, `sha1`, `sha256`, `sha384`, `sha512`,
-		`sha3_224`, `sha3_256`, `sha3_384`, `sha3_512`} {
+	for _, hashtype := range []string{`md5`, `sha1`, `sha2`, `sha3`} {
 		for _, tp := range TESTDATA {
 			var (
 				r run
@@ -218,20 +217,10 @@ func TestHashes(t *testing.T) {
 				s.MD5 = append(s.MD5, tp.md5)
 			case `sha1`:
 				s.SHA1 = append(s.SHA1, tp.sha1)
-			case `sha256`:
-				s.SHA256 = append(s.SHA256, tp.sha256)
-			case `sha384`:
-				s.SHA384 = append(s.SHA384, tp.sha384)
-			case `sha512`:
-				s.SHA512 = append(s.SHA512, tp.sha512)
-			case `sha3_224`:
-				s.SHA3_224 = append(s.SHA3_224, tp.sha3_224)
-			case `sha3_256`:
-				s.SHA3_256 = append(s.SHA3_256, tp.sha3_256)
-			case `sha3_384`:
-				s.SHA3_384 = append(s.SHA3_384, tp.sha3_384)
-			case `sha3_512`:
-				s.SHA3_512 = append(s.SHA3_512, tp.sha3_512)
+			case `sha2`:
+				s.SHA2 = append(s.SHA2, tp.sha2)
+			case `sha3`:
+				s.SHA3 = append(s.SHA3, tp.sha3)
 			}
 			r.Parameters.Searches["s1"] = s
 			msg, err := modules.MakeMessage(modules.MsgClassParameters, r.Parameters)
@@ -266,13 +255,8 @@ func TestAllHashes(t *testing.T) {
 		s.Paths = append(s.Paths, basedir)
 		s.MD5 = append(s.MD5, tp.md5)
 		s.SHA1 = append(s.SHA1, tp.sha1)
-		s.SHA256 = append(s.SHA256, tp.sha256)
-		s.SHA384 = append(s.SHA384, tp.sha384)
-		s.SHA512 = append(s.SHA512, tp.sha512)
-		s.SHA3_224 = append(s.SHA3_224, tp.sha3_224)
-		s.SHA3_256 = append(s.SHA3_256, tp.sha3_256)
-		s.SHA3_384 = append(s.SHA3_384, tp.sha3_384)
-		s.SHA3_512 = append(s.SHA3_512, tp.sha3_512)
+		s.SHA2 = append(s.SHA2, tp.sha2)
+		s.SHA3 = append(s.SHA3, tp.sha3)
 		s.Options.MatchAll = true
 		r.Parameters.Searches["s1"] = s
 		msg, err := modules.MakeMessage(modules.MsgClassParameters, r.Parameters)
@@ -488,18 +472,12 @@ func TestMismatch(t *testing.T) {
 				Paths:    []string{basedir},
 				MD5:      []string{TESTDATA[2].md5},
 				SHA1:     []string{TESTDATA[2].sha1},
-				SHA256:   []string{TESTDATA[2].sha256},
-				SHA384:   []string{TESTDATA[2].sha384},
-				SHA512:   []string{TESTDATA[2].sha512},
-				SHA3_224: []string{TESTDATA[2].sha3_224},
-				SHA3_256: []string{TESTDATA[2].sha3_256},
-				SHA3_384: []string{TESTDATA[2].sha3_384},
-				SHA3_512: []string{TESTDATA[2].sha3_512},
+				SHA2:     []string{TESTDATA[2].sha2},
+				SHA3:     []string{TESTDATA[2].sha3},
 				Options: options{
 					MaxDepth: 1,
 					MatchAll: true,
-					Mismatch: []string{`md5`, `sha1`, `sha256`, `sha384`, `sha512`,
-						`sha3_224`, `sha3_256`, `sha3_384`, `sha3_512`},
+					Mismatch: []string{`md5`, `sha1`, `sha2`, `sha3`},
 				},
 			},
 			expectedfiles: []string{
@@ -547,13 +525,8 @@ func TestParamsParser(t *testing.T) {
 	args = append(args, "-mtime", TESTDATA[0].mtime)
 	args = append(args, "-md5", TESTDATA[0].md5)
 	args = append(args, "-sha1", TESTDATA[0].sha1)
-	args = append(args, "-sha256", TESTDATA[0].sha256)
-	args = append(args, "-sha384", TESTDATA[0].sha384)
-	args = append(args, "-sha512", TESTDATA[0].sha512)
-	args = append(args, "-sha3_224", TESTDATA[0].sha3_224)
-	args = append(args, "-sha3_256", TESTDATA[0].sha3_256)
-	args = append(args, "-sha3_384", TESTDATA[0].sha3_384)
-	args = append(args, "-sha3_512", TESTDATA[0].sha3_512)
+	args = append(args, "-sha2", TESTDATA[0].sha2)
+	args = append(args, "-sha3", TESTDATA[0].sha3)
 	args = append(args, "-matchany")
 	args = append(args, "-matchall")
 	args = append(args, "-macroal")
@@ -651,8 +624,7 @@ const subdirs string = `/a/b/c/d/e/f/g/h/i/j/k/l/m/n/`
 type testParams struct {
 	data []byte
 	name, size, mode, mtime, content,
-	md5, sha1, sha256, sha384, sha512,
-	sha3_224, sha3_256, sha3_384, sha3_512 string
+	md5, sha1, sha2, sha3 string
 }
 
 var TESTDATA = []testParams{
@@ -672,13 +644,8 @@ some other text`),
 		content:  `^--- header for first file ---$`,
 		md5:      `e499c1912bd9af4f7e8ccaf27f7b04d2`,
 		sha1:     `d7bbc3dd7adf6e347c93a4c8b9bfb8ef4748c0fb`,
-		sha256:   `4d8ef27c4415d71cbbfad1eaa97d6f2a3ddacc9708b66efbb726133b9fd3d79a`,
-		sha384:   `8bf7ca66a8cd73b252e1431e350ef415034b211ea4d7711189b0b3f664c6fd372ed4a8f454ffc7e577a828a97a30074b`,
-		sha512:   `bd6e6a312a5fe4998df5d6ace15837355e1465ed3d32188ec56551279f70b51cf168e5c83d1f60bf66c15b70c0b2e51b4a728f3a0046d46db9a9e566c2db3daf`,
-		sha3_224: `a7ba1e66174848ecea143b612f22168b006979e3827e09f0ae6395e8`,
-		sha3_256: `091dbb7c04406fb5d95dc1c3c1fbc0378a63f19472f42fdd133b826a2a5ea3a7`,
-		sha3_384: `5b33c1fff06dff46b62b89922dfbab786a7763601028a741b7d7f1c75b584ae88acaf07f672bd4902929e7168fd9de28`,
-		sha3_512: `c9cf248748858b3b1ea752f9c778889a9cf0abc23529da20147b9ffbd7254a82d949c85a399730b40b3603bb2bc41b9585de147d2cd7080938388615501c4a5e`,
+		sha2:     `4d8ef27c4415d71cbbfad1eaa97d6f2a3ddacc9708b66efbb726133b9fd3d79a`,
+		sha3:     `a7ba1e66174848ecea143b612f22168b006979e3827e09f0ae6395e8`,
 	},
 	testParams{
 		data: []byte(`--- header for second file ---
@@ -696,13 +663,8 @@ some other other text`),
 		content:  `^--- header for second file ---$`,
 		md5:      `63c7fa8ec03e72343d434835ff95c8a7`,
 		sha1:     `14dcc657c3362bc9adb12ff8c23e14940df42b6f`,
-		sha256:   `b665fabb0c6c5cd9fabfd3fdd222aa4cd56dceda82485acc263546d30a825634`,
-		sha384:   `fdd9460795c000f9143e5bdd8d7ffb153f7541c154682179a131f557fa0a878db51f0046672e486a9bdcb64cdaf76ca1`,
-		sha512:   `e40b2f00f2a4097b3f53bc33c60cd04750ce87016ec3c6ef05bea05f0c5f49c56f7d634448012b2bbb879c2ede43d5bd3bc0ce20873129c2caad9cb4d8bbe6da`,
-		sha3_224: `bae8d23a49eb7ac8c5c8589e6d089d4b127478132711d164d92ad244`,
-		sha3_256: `92d0f8878baff9ff926bb752de4e830d60ef05146be90e0b857a58402940f839`,
-		sha3_384: `f8b736cdc7e14afb264bafb287805a2d05397142cabe3a8d1b17c13f6b5bf62006b413814fdb7d04cd63ebe7a8c59542`,
-		sha3_512: `c501a1809064bf480b6260c0af7430e81547a854a41ce900707134210123db4ddfefd58f73a41b3072cef0a034b39d8d4ce01265d3ce30d0bf11e0ea26ec2dbd`,
+		sha2:     `b665fabb0c6c5cd9fabfd3fdd222aa4cd56dceda82485acc263546d30a825634`,
+		sha3:     `bae8d23a49eb7ac8c5c8589e6d089d4b127478132711d164d92ad244`,
 	},
 	testParams{
 		data: []byte("\x35\xF3\x40\xD8\xE9\xCE\x96\x38\xBD\x02\x80\xE4\xED\xA8\xCE\x5F\x5D\xEB\xDB\x92" +
@@ -764,12 +726,7 @@ some other other text`),
 		content:  `skZ0`,
 		md5:      `8d3a7afb7e59693b383d52396243a5b8`,
 		sha1:     `d82bc1145d471714b056940b268032f9ab0df2ae`,
-		sha256:   `3b495fae5bae9751ea4706c29e992002ba277bce30bd83a827b01ba977eabc2f`,
-		sha384:   `e778dda037764db51a4aaaf1511f8415aa9e6b5f9e012d1fef4cfe5492bf11410cb37a5db2acf3580460a265bd0ace2e`,
-		sha512:   `36d988e223f086c95d45c804f3d4b0ab95e74b69c36d5bc8801dcd9d71c0e252e4987d8e2bcab348811e559c454bd9e18527fd66c3b0be1d53463c5d7a80e9f2`,
-		sha3_224: `fdb23afa808c265284c3199013e4ded9704eebf54ffdc1f016dacc12`,
-		sha3_256: `bb84ecae0ebff542bef1478e4f19523c910905a88669abb38fe86f8b1b1cc7a8`,
-		sha3_384: `5053ccfd9cc72aead52742ea89ef4ab87c7e8fac92d09983d6ea0b43d8f1e247338c6460a66a7e5f53293888b82e2720`,
-		sha3_512: `674b6d6b4868e7bf848c4ce9be4fa964e3907a78c82152dd7f009778015043810e0e6fd75f58fb4a706893f22f70cabab449ebde37b88cb645675c3df16ea347`,
+		sha2:     `3b495fae5bae9751ea4706c29e992002ba277bce30bd83a827b01ba977eabc2f`,
+		sha3:     `fdb23afa808c265284c3199013e4ded9704eebf54ffdc1f016dacc12`,
 	},
 }
