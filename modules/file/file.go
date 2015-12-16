@@ -497,6 +497,8 @@ func (r *run) ValidateParameters() (err error) {
 				err = validateHash(hash, checkSHA384)
 			case 128:
 				err = validateHash(hash, checkSHA512)
+			default:
+				fmt.Printf("ERROR: Invalid hash length")
 			}
 			if err != nil {
 				return
@@ -513,6 +515,8 @@ func (r *run) ValidateParameters() (err error) {
 				err = validateHash(hash, checkSHA3_384)
 			case 128:
 				err = validateHash(hash, checkSHA3_512)
+			default:
+				fmt.Printf("ERROR: Invalid hash length")
 			}
 			if err != nil {
 				return
@@ -622,7 +626,7 @@ func validateMismatch(filter string) error {
 	if len(filter) < 1 {
 		return fmt.Errorf("empty filters are not permitted")
 	}
-	filterregexp := `^(name|size|mode|mtime|content|md5|sha1|sha2|sha3)$`
+	filterregexp := `^(name|size|mode|mtime|content|md5|sha1|sha256|sha384|sha512|sha3_224|sha3_256|sha3_384|sha3_512)$`
 	re := regexp.MustCompile(filterregexp)
 	if !re.MatchString(filter) {
 		return fmt.Errorf("The syntax of filter '%s' is invalid. Must match regex %s", filter, filterregexp)
