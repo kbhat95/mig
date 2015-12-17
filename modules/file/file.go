@@ -237,52 +237,37 @@ func (s *search) makeChecks() (err error) {
 		s.checkmask |= c.code
 	}
 	for _, v := range s.SHA2 {
-		var c check	
+		var c check
 		c.value = strings.ToUpper(v)
+		if s.hasMismatch("sha2") {
+			c.mismatch = true
+		}
 		switch len(v) {
 		case 64:
 			c.code = checkSHA256
-			if s.hasMismatch("sha256") {
-				c.mismatch = true
-			}
 		case 96:
 			c.code = checkSHA384
-			if s.hasMismatch("sha384") {
-				c.mismatch = true
-			}
 		case 128:
 			c.code = checkSHA512
-			if s.hasMismatch("sha512") {
-				c.mismatch = true
-			}
 		}
 		s.checks = append(s.checks, c)
 		s.checkmask |= c.code
 	}
 	for _, v := range s.SHA3 {
-		var c check	
+		var c check
 		c.value = strings.ToUpper(v)
+		if s.hasMismatch("sha3") {
+			c.mismatch = true
+		}
 		switch len(v) {
 		case 56:
 			c.code = checkSHA3_224
-			if s.hasMismatch("sha3_224") {
-				c.mismatch = true
-			}
 		case 64:
 			c.code = checkSHA3_256
-			if s.hasMismatch("sha3_256") {
-				c.mismatch = true
-			}
 		case 96:
 			c.code = checkSHA3_384
-			if s.hasMismatch("sha3_384") {
-				c.mismatch = true
-			}
 		case 128:
 			c.code = checkSHA3_512
-			if s.hasMismatch("sha3_512") {
-				c.mismatch = true
-			}
 		}
 		s.checks = append(s.checks, c)
 		s.checkmask |= c.code
@@ -626,7 +611,7 @@ func validateMismatch(filter string) error {
 	if len(filter) < 1 {
 		return fmt.Errorf("empty filters are not permitted")
 	}
-	filterregexp := `^(name|size|mode|mtime|content|md5|sha1|sha256|sha384|sha512|sha3_224|sha3_256|sha3_384|sha3_512)$`
+	filterregexp := `^(name|size|mode|mtime|content|md5|sha1|sha2|sha3)$`
 	re := regexp.MustCompile(filterregexp)
 	if !re.MatchString(filter) {
 		return fmt.Errorf("The syntax of filter '%s' is invalid. Must match regex %s", filter, filterregexp)
