@@ -387,7 +387,7 @@ type mismatchtest struct {
 func TestMismatch(t *testing.T) {
 	var MismatchTestCases = []mismatchtest{
 		mismatchtest{
-			desc: "want files that don't match name '^testfile0' with maxdept=1, should find testfile1 and testfile2",
+			desc: "want files that don't match name '^testfile0' with maxdept=1, should find testfile1, 2, 3, 4, & 5",
 			search: search{
 				Paths: []string{basedir},
 				Names: []string{"^" + TESTDATA[0].name + "$"},
@@ -398,10 +398,13 @@ func TestMismatch(t *testing.T) {
 			},
 			expectedfiles: []string{
 				basedir + "/" + TESTDATA[1].name,
-				basedir + "/" + TESTDATA[2].name},
+				basedir + "/" + TESTDATA[2].name,
+				basedir + "/" + TESTDATA[3].name,
+				basedir + "/" + TESTDATA[4].name,
+				basedir + "/" + TESTDATA[5].name},
 		},
 		mismatchtest{
-			desc: "want files that don't have a size of 190 bytes or larger than 10{k,m,g,t} or smaller than 10 bytes, should find testfile1 and testfile2",
+			desc: "want files that don't have a size of 190 bytes or larger than 10{k,m,g,t} or smaller than 10 bytes, should find testfile1, 2, & 3",
 			search: search{
 				Paths: []string{basedir},
 				Sizes: []string{"190", ">10k", ">10m", ">10g", ">10t", "<10"},
@@ -413,7 +416,8 @@ func TestMismatch(t *testing.T) {
 			},
 			expectedfiles: []string{
 				basedir + "/" + TESTDATA[1].name,
-				basedir + "/" + TESTDATA[2].name},
+				basedir + "/" + TESTDATA[2].name,
+				basedir + "/" + TESTDATA[3].name},
 		},
 		mismatchtest{
 			desc: "want files that have not been modified in the last hour ago, should find nothing",
@@ -438,7 +442,7 @@ func TestMismatch(t *testing.T) {
 			expectedfiles: []string{""},
 		},
 		mismatchtest{
-			desc: "want files that don't a name different than testfile0, should find testfile0",
+			desc: "want files that don't have a name different than testfile0, should find testfile0",
 			search: search{
 				Paths: []string{basedir},
 				Names: []string{"!^testfile0$"},
@@ -467,7 +471,7 @@ func TestMismatch(t *testing.T) {
 				basedir + subdirs + TESTDATA[1].name},
 		},
 		mismatchtest{
-			desc: "want files that don't match the hashes of testfile2, should find testfile0 & 1",
+			desc: "want files that don't match the hashes of testfile2, should find testfile0, 1, 3, 4, & 5",
 			search: search{
 				Paths:    []string{basedir},
 				MD5:      []string{TESTDATA[2].md5},
@@ -477,13 +481,15 @@ func TestMismatch(t *testing.T) {
 				Options: options{
 					MaxDepth: 1,
 					MatchAll: true,
-					Mismatch: []string{`md5`, `sha1`, `sha256`, `sha384`, `sha512`,
-					`sha3_224`, `sha3_256`, `sha3_384`, `sha3_512`},
+					Mismatch: []string{`md5`, `sha1`, `sha2`, `sha3`},
 				},
 			},
 			expectedfiles: []string{
 				basedir + "/" + TESTDATA[0].name,
-				basedir + "/" + TESTDATA[1].name},
+				basedir + "/" + TESTDATA[1].name,
+				basedir + "/" + TESTDATA[3].name,
+				basedir + "/" + TESTDATA[4].name,
+				basedir + "/" + TESTDATA[5].name},
 		},
 	}
 
@@ -653,7 +659,6 @@ some other text`),
 # this is a comment
                                        
 # above is an line filled with spaces
-
 # above is an empty line, no spaces
 some text
 some other other text`),
@@ -729,5 +734,62 @@ some other other text`),
 		sha1:     `d82bc1145d471714b056940b268032f9ab0df2ae`,
 		sha2:     `3b495fae5bae9751ea4706c29e992002ba277bce30bd83a827b01ba977eabc2f`,
 		sha3:     `fdb23afa808c265284c3199013e4ded9704eebf54ffdc1f016dacc12`,
+	},
+	testParams{
+		data: []byte(`--- header for fourth file ---
+# this is a comment
+                                       
+# above is an line filled with spaces
+
+# above is an empty line, no spaces
+some text
+some other text`),
+		name:     `testfile3`,
+		size:     `191`,
+		mode:     `-rw-r--r--`,
+		mtime:    `<1m`,
+		content:  `^--- header for fourth file ---$`,
+		md5:      `54a5bb62d56ac0a0a500149d1ff75be5`,
+		sha1:     `79932c94b3e3fc24e36a766be2c1c0bc287b6961`,
+		sha2:     `29b69fce5c6be9cf9d6d28dba8c5ea52777807f30e74d112469342de94f891f3764bb2fddaa8d50d8a8d89f3016eeff3`,
+		sha3:     `beb000fb83c4c307cf8c0660bc9c413784b936e9af8877f1ab6da033b5a087e3`,
+	},
+	testParams{
+		data: []byte(`--- header for fifth file ---
+# this is a comment
+                                       
+# above is an line filled with spaces
+
+# above is an empty line, no spaces
+some text
+some other text`),
+		name:     `testfile4`,
+		size:     `190`,
+		mode:     `-rw-r--r--`,
+		mtime:    `<1m`,
+		content:  `^--- header for fifth file ---$`,
+		md5:      `689070e09d152fd6ff1adc4f028e259f`,
+		sha1:     `9529cd7b71999441337265a12d92c8a66ddc6e23`,
+		sha2:     `801f27fa92530ece7d33eddfe1b5f45f1c6099ef0025e49adaa5782eecd4cc4a418b2561afb26d57adb7954446ed61dd74badb56144e966b6cb797012d38ab25`,
+		sha3:     `8f5136e2a4f3f4fa78ef15eb65cc43fe12fbf8e85ad307d5caf8b1ffeea9bd605de5ee3dcbc2eecef7556087ddab6f57`,
+	},
+	testParams{
+		data: []byte(`--- header for sixth file ---
+# this is a comment
+                                       
+# above is an line filled with spaces
+
+# above is an empty line, no spaces
+some text
+some other text`),
+		name:     `testfile5`,
+		size:     `190`,
+		mode:     `-rw-r--r--`,
+		mtime:    `<1m`,
+		content:  `^--- header for sixth file ---$`,
+		md5:      `9fd38eb3eb0ca0008ca7bb43d18d0f11`,
+		sha1:     `fc011e9e37ccfac3381627e0c8c7bc4bfc285c96`,
+		sha2:     `12c2ac84c949d43515919b9712524fb7c5b1a630c2367341da68c5d8378fbbe0aa9faecebfdcf21b7721c4eff87e3f3438da40d419952e20135c45fab5f6160b`,
+		sha3:     `ed8c06f1862f56646aa4ae6218782803078031a41bc88c8d73ecabf77eded292abbc5b78a6bef4ab7e67dd4f150d35d58c11b425478d5edb3f93750711109087`,
 	},
 }
